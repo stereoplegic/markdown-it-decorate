@@ -51,6 +51,15 @@ describe('markdown-it-decorate', function () {
     test('> text <!--{key=val}-->', '<blockquote>\n<p key="val">text</p>\n</blockquote>\n')
   })
 
+  describe('lists', function () {
+    test('* text\n<!--{.c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
+    test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
+  })
+
+  xdescribe('pending', function () {
+    test('* text <!--{.c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
+  })
+
   describe('line breaks', function () {
     test('para\n<!--{.red .blue}-->', '<p class="red blue">para</p>\n')
     test('# heading\n<!--{key=val}-->', '<h1 key="val">heading</h1>\n')
