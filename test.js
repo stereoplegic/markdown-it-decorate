@@ -35,20 +35,31 @@ describe('markdown-it-attrs', function () {
     test('text <!--{key=\'val\'}-->', '<p key="val">text</p>\n')
     test('text <!--{a=b c=d}-->', '<p a="b" c="d">text</p>\n')
     test('text <!--{key=val}-->', '<p key="val">text</p>\n')
+    test('text <!--{data-toggle="foo"}-->', '<p data-toggle="foo">text</p>\n')
   })
 
-  describe('non-p', function () {
+  describe('h1 (atx)', function () {
     test('# h1 <!--{key=val}-->', '<h1 key="val">h1</h1>\n')
   })
 
-  describe.skip('line breaks', function () {
-    test('text\n<!--{.red .blue}-->', '<p class="red blue">text</p>\n')
-    test('# h1\n<!--{key=val}-->', '<h1 key="val">h1</h1>\n')
+  describe('h1 (lined)', function () {
+    test('h1\n==\n<!--{key=val}-->', '<h1 key="val">h1</h1>\n')
+  })
+
+  describe('blockquote', function () {
+    test('> text <!--{key=val}-->', '<blockquote>\n<p key="val">text</p>\n</blockquote>\n')
+  })
+
+  describe('line breaks', function () {
+    test('para\n<!--{.red .blue}-->', '<p class="red blue">para</p>\n')
+    test('# heading\n<!--{key=val}-->', '<h1 key="val">heading</h1>\n')
+    test('> bquote\n<!--{key=val}-->', '<blockquote key="val">\n<p>bquote</p>\n</blockquote>\n')
+    test('> > bquote 2x\n<!--{key=val}-->', '<blockquote key="val">\n<blockquote>\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
   })
 
   function test (input, output) {
-    var m = input.match(/<!--(.*?)-->/)
-    it(m && m[1] || input, function () {
+    var label = input.replace(/\n/g, '· ')
+    it(label, function () {
       assert.equal(md.render(input), output)
     })
   }
