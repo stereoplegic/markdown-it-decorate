@@ -1,13 +1,14 @@
 'use strict'
+
 var assert = require('assert')
 var markdownIt = require('markdown-it')
-var markdownItAttrs = require('./')
+var decorate = require('../')
 
-describe('markdown-it-attrs', function () {
+describe('markdown-it-decorate', function () {
   var md
 
   beforeEach(function () {
-    md = markdownIt({ html: true }).use(markdownItAttrs)
+    md = markdownIt({ html: true }).use(decorate)
   })
 
   describe('classes', function () {

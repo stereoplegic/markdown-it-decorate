@@ -38,7 +38,7 @@ module.exports = function attributes (md) {
       }
     })
 
-    // Remove <!--...--> html_block tokens 
+    // Remove <!--...--> html_block tokens
     omissions.forEach(function (idx) {
       tokens = tokens.splice(idx, 1)
     })
@@ -98,7 +98,7 @@ function setAttr (token, attr, value, options) {
   if (idx === -1) {
     token.attrPush([ attr, value ])
   } else if (options && options.append) {
-    token.attrs[idx][1] = 
+    token.attrs[idx][1] =
       token.attrs[idx][1] + ' ' + value
   } else {
     token.attrs[idx][1] = value
