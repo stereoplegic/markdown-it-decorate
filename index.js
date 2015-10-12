@@ -1,112 +1,80 @@
-'use strict';
+'use strict'
 
-module.exports = function attributes(md) {
+module.exports = function attributes (md) {
+  function curlyAttrs (state) {
+    var tokens = state.tokens
+    tokens.forEach(function (token, i) {
+      if (token.type !== 'inline') return
 
-  // not tab, line feed, form feed, space, solidus, greater than sign, quotation mark, apostrophe and equals sign
-  var allowedKeyChars = /[^\t\n\f \/>"'=]/;
-  var pairSeparator = ' ';
-  var keySeparator = '=';
-  var classChar = '.';
-  var idChar = '#';
+      var lastChild = token.children[token.children.length - 1]
+      if (!lastChild) return
 
-  function curlyAttrs(state){
-    var l = state.tokens.length;
-    var tokens = state.tokens;
-    for (var i = 0; i < l; i++) {
-      if (tokens[i].type !== 'inline') {
-        continue;
-      }
+      var m = lastChild.content.match(/^<!--\{(.*)\}-->$/)
+      if (!m) return
 
-      var inlineTokens = tokens[i].children;
-      if (inlineTokens.length <= 0) {
-        continue;
-      }
-      var end = inlineTokens.length - 1;
-      var content = inlineTokens[end].content;
+      token.children.pop()
+      trimRight(token.children[token.children.length - 1], 'content')
+      applyToToken(tokens[i - 1], m[1])
+    })
+  }
 
-      // should end in }
-      if (content.charAt(content.length - 1) !== '}') {
-        continue;
-      }
+  md.core.ruler.push('curly_attributes', curlyAttrs)
+}
 
-      var curlyStart = content.indexOf('{');
+/**
+ * Private: trim the right
+ */
 
-      // should start with {
-      if (curlyStart === -1) {
-        continue;
-      }
+function trimRight (obj, attr) {
+  obj[attr] = obj[attr].replace(/\s*$/, '')
+}
 
-      var key = '';
-      var value = '';
-      var parsingKey = true;
-      var valueInsideQuotes = false;
+/**
+ * Private: apply tag to token
+ */
 
-      // read inside {}, excluding {, including }
-      for (var ii = curlyStart + 1; ii < content.length; ii++) {
-        var char = content.charAt(ii);
+function applyToToken (token, attrs) {
+  var m
 
-        // switch to reading value if equal sign
-        if (char === keySeparator) {
-          parsingKey = false;
-          continue;
-        }
-
-        // {.class}
-        if (char === classChar && key === '') {
-          key = 'class';
-          parsingKey = false;
-          continue;
-        }
-
-        // {#id}
-        if (char === idChar && key === '') {
-          key = 'id';
-          parsingKey = false;
-          continue;
-        }
-
-        // {value="inside quotes"}
-        if (char === '"' && value === '') {
-          valueInsideQuotes = true;
-          continue;
-        }
-        if (char === '"' && valueInsideQuotes) {
-          valueInsideQuotes = false;
-          continue;
-        }
-
-        // read next key/value pair
-        if ((char === pairSeparator && !valueInsideQuotes) ||
-            char === '}') {
-          if (key === 'class' &&
-              tokens[i - 1].attrIndex(key) !== -1) {
-            var classIdx = tokens[i - 1].attrIndex(key);
-            tokens[i - 1].attrs[classIdx][1] += ' ' + value;
-          } else {
-            tokens[i - 1].attrPush([key, value]);
-          }
-          key = '';
-          value = '';
-          parsingKey = true;
-          continue;
-        }
-
-        // continue if character not allowed
-        if (parsingKey && char.search(allowedKeyChars) === -1) {
-          continue;
-        }
-
-        // no other conditions met; append to key/value
-        if (parsingKey) {
-          key += char;
-          continue;
-        }
-        value += char;
-      }
-
-      inlineTokens[end].content = content.slice(0, curlyStart).trim();
-
+  while (attrs.length > 0) {
+    if (m = attrs.match(/^\s*\.([a-zA-Z0-9\-\_]+)/)) {
+      addClass(token, m[1])
+      shift()
+    } else if (m = attrs.match(/^\s*\#([a-zA-Z0-9\-\_]+)/)) {
+      setAttr(token, 'id', m[1])
+      shift()
+    } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)="([^"]*)"/)) {
+      setAttr(token, m[1], m[2])
+      shift()
+    } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)='([^']*)'/)) {
+      setAttr(token, m[1], m[2])
+      shift()
+    } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)=([^ ]*)/)) {
+      setAttr(token, m[1], m[2])
+      shift()
+    } else if (m = attrs.match(/^\s+/)) {
+      shift()
     }
   }
-  md.core.ruler.push('curly_attributes', curlyAttrs);
-};
+
+  function shift () {
+    attrs = attrs.substr(m[0].length)
+  }
+}
+
+function addClass (token, value) {
+  setAttr(token, 'class', value, { append: true })
+}
+
+function setAttr (token, attr, value, options) {
+  var idx = token.attrIndex(attr)
+
+  if (idx === -1) {
+    token.attrPush([ attr, value ])
+  } else if (options && options.append) {
+    token.attrs[idx][1] = 
+      token.attrs[idx][1] + ' ' + value
+  } else {
+    token.attrs[idx][1] = value
+  }
+}

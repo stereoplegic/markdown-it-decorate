@@ -1,65 +1,55 @@
-'use strict';
-var assert = require('assert');
-var Md = require('markdown-it');
-var markdownItAttrs = require('./');
+'use strict'
+var assert = require('assert')
+var markdownIt = require('markdown-it')
+var markdownItAttrs = require('./')
 
-describe('markdown-it-attrs', function() {
-  var md;
-  beforeEach(function(){
-    md = Md().use(markdownItAttrs);
-  });
+describe('markdown-it-attrs', function () {
+  var md
 
-  it('should add attributes when {} in end of last inline', function () {
-    var src = 'some text {with=attrs}';
-    var expected = '<p with="attrs">some text</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  beforeEach(function () {
+    md = markdownIt({ html: true }).use(markdownItAttrs)
+  })
 
-  it('should add attributes when {} in last line', function () {
-    var src = 'some text\n{with=attrs}';
-    var expected = '<p with="attrs">some text\n</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  describe('classes', function () {
+    test('text <!--{.red}-->', '<p class="red">text</p>\n')
+    test('text <!--{ .red }-->', '<p class="red">text</p>\n')
+    test('text <!--{.red.blue}-->', '<p class="red blue">text</p>\n')
+    test('text <!--{.red .blue}-->', '<p class="red blue">text</p>\n')
+  })
 
-  it('should add classes with {.class} dot notation', function () {
-    var src = 'some text {.green}';
-    var expected = '<p class="green">some text</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  describe('ids', function () {
+    test('text <!--{#myid}-->', '<p id="myid">text</p>\n')
+    test('text <!--{#x#myid}-->', '<p id="myid">text</p>\n')
+    test('text <!--{#x #myid}-->', '<p id="myid">text</p>\n')
+  })
 
-  it('should add identifiers with {#id} hashtag notation', function () {
-    var src = 'some text {#section2}';
-    var expected = '<p id="section2">some text</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  describe('combinations', function () {
+    test('text <!--{#x.y}-->', '<p id="x" class="y">text</p>\n')
+    test('text <!--{#x .y}-->', '<p id="x" class="y">text</p>\n')
+    test('text <!--{#x .y z=1}-->', '<p id="x" class="y" z="1">text</p>\n')
+  })
 
-  it('should support classes, identifiers and attributes in same {}', function () {
-    var src = 'some text {attr=lorem .class #id}';
-    var expected = '<p attr="lorem" class="class" id="id">some text</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  describe('attributes', function () {
+    test('text <!--{key="val"}-->', '<p key="val">text</p>\n')
+    test('text <!--{key="val space"}-->', '<p key="val space">text</p>\n')
+    test('text <!--{key=\'val\'}-->', '<p key="val">text</p>\n')
+    test('text <!--{a=b c=d}-->', '<p a="b" c="d">text</p>\n')
+    test('text <!--{key=val}-->', '<p key="val">text</p>\n')
+  })
 
-  it('should support attributes inside " {attr="lorem ipsum"}', function () {
-    var src = 'some text {attr="lorem ipsum"}';
-    var expected = '<p attr="lorem ipsum">some text</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  describe('non-p', function () {
+    test('# h1 <!--{key=val}-->', '<h1 key="val">h1</h1>\n')
+  })
 
-  it('should add classes in same class attribute {.c1 .c2} -> class="c1 c2"', function () {
-    var src = 'some text {.c1 .c2}';
-    var expected = '<p class="c1 c2">some text</p>\n';
-    var res = md.render(src);
-    assert.equal(expected, res);
-  });
+  describe.skip('line breaks', function () {
+    test('text\n<!--{.red .blue}-->', '<p class="red blue">text</p>\n')
+    test('# h1\n<!--{key=val}-->', '<h1 key="val">h1</h1>\n')
+  })
 
-  it('should support empty inline tokens', function(){
-    var src = ' 1 | 2 \n --|-- \n a | ';
-    md.render(src);  // should not crash / throw error
-  });
-});
+  function test (input, output) {
+    var m = input.match(/<!--(.*?)-->/)
+    it(m && m[1] || input, function () {
+      assert.equal(md.render(input), output)
+    })
+  }
+})
