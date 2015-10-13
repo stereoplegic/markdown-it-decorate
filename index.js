@@ -1,7 +1,7 @@
 'use strict'
 /* eslint-disable no-cond-assign */
 
-var tagExpr = /^<!-- ?\{(.*)\} ?-->$/
+var tagExpr = /^<!-- ?\{(?:([a-z0-9]+): ?)?(.*)\} ?-->$/
 
 module.exports = function attributes (md) {
   md.core.ruler.push('curly_attributes', curlyAttrs)
@@ -11,7 +11,7 @@ function curlyAttrs (state) {
   var tokens = state.tokens
   var crumbs = []
   var omissions = []
-  var lastParent, m
+  var lastParent, parent, m
 
   tokens.forEach(function (token, i) {
     // Save breadcrumbs so html_block will pick it up
@@ -24,7 +24,8 @@ function curlyAttrs (state) {
       m = token.content.match(tagExpr)
       if (!m) return
 
-      if (applyToToken(lastParent, m[1])) {
+      parent = findParent(crumbs, lastParent, m[1])
+      if (parent && applyToToken(parent, m[2])) {
         omissions.unshift(i)
       }
     }
@@ -37,7 +38,8 @@ function curlyAttrs (state) {
       if (!m) return
 
       // Remove the comment, then remove the extra space
-      if (applyToToken(tokens[i - 1], m[1])) {
+      parent = findParent(crumbs, tokens[i - 1], m[1])
+      if (parent && applyToToken(parent, m[2])) {
         token.children.pop()
         trimRight(token.children[token.children.length - 1], 'content')
       }
@@ -48,6 +50,40 @@ function curlyAttrs (state) {
   omissions.forEach(function (idx) {
     tokens = tokens.splice(idx, 1)
   })
+}
+
+/*
+ * List of tag -> token type mappings.
+ */
+
+var dict = {
+  li: 'list_item_open',
+  ul: 'bullet_list_open',
+  p: 'paragraph_open',
+  ol: 'ordered_list_open',
+  blockquote: 'blockquote_open',
+  h1: 'heading_open',
+  h2: 'heading_open',
+  h3: 'heading_open',
+  h4: 'heading_open',
+  h5: 'heading_open',
+  h6: 'heading_open'
+}
+
+/**
+ * Private: given a list of tokens `list` and `lastParent`, find the one that matches `tag`.
+ */
+
+function findParent (list, lastParent, tag) {
+  if (!tag) return lastParent
+
+  var target = dict[tag.toLowerCase()]
+  var token
+  var len = list.length
+  for (var i = len; i >= 0; i--) {
+    token = len === i ? lastParent : list[i]
+    if (token.type === target) return token
+  }
 }
 
 /**

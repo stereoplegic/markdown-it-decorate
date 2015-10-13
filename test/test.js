@@ -71,9 +71,14 @@ describe('markdown-it-decorate', function () {
     test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
   })
 
-  // describe('specifying tags', function () {
-  //   test('* text <!--{li: .c}-->', '<ul class="c">\n<li class="c">text</li>\n</ul>\n')
-  // })
+  describe('specifying tags', function () {
+    test('* text <!--{li: .c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
+    test('* text <!--{ul: .c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
+    test('1. text <!--{ol: .c}-->', '<ol class="c">\n<li>text</li>\n</ol>\n')
+    test('# text <!--{h1: .c}-->', '<h1 class="c">text</h1>\n')
+    test('> text <!--{blockquote: .c}-->', '<blockquote class="c">\n<p>text</p>\n</blockquote>\n')
+    test('> * text <!--{blockquote:.c}-->', { match: /<blockquote class="c">/ })
+  })
 
   describe('li with paragraphs', function () {
     test('* text\n\n* text<!--{.c}-->',

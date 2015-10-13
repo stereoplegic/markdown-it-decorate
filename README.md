@@ -26,6 +26,14 @@ You can put the comment in the same line or in the next.
 | `# Hi <!--{.center.red}-->` | `<h1 class='center red'>Hi</h1>` |
 | `# Hi <!--{#top .hide}-->` | `<h1 id='top' class='hide'>Hi</h1>` |
 
+## Specifying
+
+```md
+> This is a blockquote
+>
+> * It has a list.
+> * You can specify tag names. <!-- {ul:.wide} -->
+
 ## Prior art
 
 * This is initially based off of [arve0/markdown-it-attrs](https://github.com/arve0/markdown-it-attrs) which uses text to annotate blocks (eg, `{.class #id}`). markdown-it-attr's approach was based off of [Pandoc's header attributes](http://pandoc.org/README.html#extension-header_attributes).
