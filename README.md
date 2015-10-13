@@ -30,8 +30,10 @@ You can put the comment in the same line or in the next.
 | Source | Output |
 |----|----|
 | `Text <!-- {.center} -->` | `<p class='center'>Text</p>` |
-| `# Hi <!-- {.center.red} -->` | `<h1 class='center red'>Hi</h1>` |
-| `# Hi <!-- {#top .hide} -->` | `<h1 id='top' class='hide'>Hi</h1>` |
+| `# Hola <!-- {.center.red} -->` | `<h1 class='center red'>Hola</h1>` |
+| `# Hola <!-- {#top .hide} -->` | `<h1 id='top' class='hide'>Hola</h1>` |
+| `# Hola <!-- {data-show="true"} -->` | `<h1 data-show='true'>Hola</h1>` |
+| `![Image](img.jpg)<!-- {width=20} -->` | `<img src='img.jpg' alt='Image' width='20'>` |
 
 ## Disambiguating
 
