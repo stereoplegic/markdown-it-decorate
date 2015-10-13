@@ -1,6 +1,6 @@
 'use strict'
 
-var tagExpr = /^<!--\{(.*)\}-->$/
+var tagExpr = /^<!-- ?\{(.*)\} ?-->$/
 
 module.exports = function attributes (md) {
   md.core.ruler.push('curly_attributes', curlyAttrs)

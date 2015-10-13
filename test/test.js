@@ -13,11 +13,18 @@ describe('markdown-it-decorate', function () {
 
   describe('classes', function () {
     test('text <!--{.red}-->', '<p class="red">text</p>\n')
-    test('text <!--{ .red }-->', '<p class="red">text</p>\n')
     test('text <!--{.red.blue}-->', '<p class="red blue">text</p>\n')
     test('text <!--{.red .blue}-->', '<p class="red blue">text</p>\n')
   })
 
+  describe('spaces', function () {
+    test('text <!--{.red}-->', '<p class="red">text</p>\n')
+    test('text <!--{ .red }-->', '<p class="red">text</p>\n')
+    test('text <!-- {.red }-->', '<p class="red">text</p>\n')
+    test('text <!--{ .red} -->', '<p class="red">text</p>\n')
+    test('text <!-- {.red} -->', '<p class="red">text</p>\n')
+    test('text <!-- { .red } -->', '<p class="red">text</p>\n')
+  })
   describe('ids', function () {
     test('text <!--{#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x#myid}-->', '<p id="myid">text</p>\n')
