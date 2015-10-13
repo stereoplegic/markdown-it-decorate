@@ -1,40 +1,38 @@
 {
-  "name": "markdown-it-attrs",
-  "version": "0.0.3",
-  "description": "Add classes, identifiers and attributes to your markdown with {} curly brackets, similar to pandoc's header attributes",
-  "license": "MIT",
-  "repository": "arve0/markdown-it-attrs",
-  "author": {
-    "name": "Arve Seljebu",
-    "email": "arve.seljebu@gmail.com",
-    "url": "arve0.github.io"
+  "name": "markdown-it-decorate",
+  "description": "Add classes, identifiers and attributes to your markdown with HTML comments",
+  "version": "1.0.0",
+  "author": "Rico Sta. Cruz <rico@ricostacruz.com>",
+  "bugs": {
+    "url": "https://github.com/rstacruz/markdown-it-decorate/issues"
   },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "scripts": {
-    "test": "mocha",
-    "prepublish": "mocha",
-    "postpublish": "git push; git push --tags"
-  },
-  "files": [
-    "index.js"
-  ],
-  "homepage": "https://github.com/arve0/markdown-it-attrs",
-  "keywords": [
-    "markdown-it",
-    "markdown-it-plugin",
-    "attribute",
-    "class",
-    "id",
-    "identifier",
-    "curly brackets",
-    "pandoc",
-    "header_attributes"
-  ],
   "dependencies": {},
   "devDependencies": {
     "markdown-it": "^4.4.0",
     "mocha": "*"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "homepage": "https://github.com/rstacruz/markdown-it-decorate#readme",
+  "keywords": [
+    "attribute",
+    "class",
+    "curly brackets",
+    "header_attributes",
+    "id",
+    "identifier",
+    "markdown-it",
+    "markdown-it-plugin",
+    "pandoc"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rstacruz/markdown-it-decorate.git"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
