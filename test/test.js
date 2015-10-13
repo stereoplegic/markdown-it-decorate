@@ -3,14 +3,9 @@
 var assert = require('assert')
 var markdownIt = require('markdown-it')
 var decorate = require('../')
+var md = markdownIt({ html: true }).use(decorate)
 
 describe('markdown-it-decorate', function () {
-  var md
-
-  beforeEach(function () {
-    md = markdownIt({ html: true }).use(decorate)
-  })
-
   describe('classes', function () {
     test('text <!--{.red}-->', '<p class="red">text</p>\n')
     test('text <!--{.red.blue}-->', '<p class="red blue">text</p>\n')
@@ -60,6 +55,15 @@ describe('markdown-it-decorate', function () {
 
   describe('h1 (atx)', function () {
     test('# h1 <!--{key=val}-->', '<h1 key="val">h1</h1>\n')
+  })
+
+  describe('h1 with formatting', function () {
+    test('# *h1* <!--{key=val}-->', '<h1><em key="val">h1</em></h1>\n')
+  })
+
+  describe('nested inline formatting', function () {
+    test('# ***yo*<!--{key=val}-->**', '<h1><strong><em key="val">yo</em></strong></h1>\n')
+    test('# ***yo***<!--{key=val}-->', '<h1><strong key="val"><em>yo</em></strong></h1>\n')
   })
 
   describe('h1 (lined)', function () {
@@ -121,15 +125,15 @@ describe('markdown-it-decorate', function () {
     test('> bquote\n<!--{key=val}-->', '<blockquote key="val">\n<p>bquote</p>\n</blockquote>\n')
     test('> > bquote 2x\n<!--{key=val}-->', '<blockquote key="val">\n<blockquote>\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
   })
-
-  function test (input, output) {
-    var label = input.replace(/\n/g, '· ')
-    it(label, function () {
-      if (typeof output === 'object' && output.match) {
-        assert.ok(md.render(input).match(output.match))
-      } else {
-        assert.equal(md.render(input), output)
-      }
-    })
-  }
 })
+
+function test (input, output) {
+  var label = input.replace(/\n/g, '· ')
+  it(label, function () {
+    if (typeof output === 'object' && output.match) {
+      assert.ok(md.render(input).match(output.match))
+    } else {
+      assert.equal(md.render(input), output)
+    }
+  })
+}
