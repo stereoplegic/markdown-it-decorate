@@ -14,7 +14,7 @@ This is some text. <!--{.center}-->
 
 ## Block elements
 
-Create an HTML comment in the format `<!--{...}-->`, where `...` can be a `.class`, `#id`, `key=attr` or a combination of both. Be sure to render markdownIt with `html: true` to enable parsing of `<!--{comments}-->`.
+Create an HTML comment in the format `<!-- {...} -->`, where `...` can be a `.class`, `#id`, `key=attr` or a combination of any of them. Be sure to render markdownIt with `html: true` to enable parsing of `<!--{comments}-->`.
 
 You can put the comment in the same line or in the next.
 
@@ -22,17 +22,44 @@ You can put the comment in the same line or in the next.
 
 | Source | Output |
 |----|----|
-| `Text <!--{.center}-->` | `<p class='center'>Text</p>` |
-| `# Hi <!--{.center.red}-->` | `<h1 class='center red'>Hi</h1>` |
-| `# Hi <!--{#top .hide}-->` | `<h1 id='top' class='hide'>Hi</h1>` |
+| `Text <!-- {.center} -->` | `<p class='center'>Text</p>` |
+| `# Hi <!-- {.center.red} -->` | `<h1 class='center red'>Hi</h1>` |
+| `# Hi <!-- {#top .hide} -->` | `<h1 id='top' class='hide'>Hi</h1>` |
 
-## Specifying
+## Disambiguating
+
+Annotations will apply itself to the last thing HTML element preceding it. In the case below, `.wide` will be applied to the link (*"Continue"*).
 
 ```md
 > This is a blockquote
 >
 > * It has a list.
-> * You can specify tag names. <!-- {ul:.wide} -->
+> * You can specify tag names. [Continue](#continue) <!-- {.wide} -->
+```
+
+To make it apply to a different element, precede your annotations with the tag name followed by a `:`.
+
+```md
+> * It has a list.
+> * You can specify tag names. [Continue](#continue) <!-- {li:.wide} -->
+```
+
+You can combine them as you need. In this example, the link gets `.button`, the list item gets `.wide`, and the blockquote gets `.bordered`.
+
+```md
+> * [Continue](#continue) <!-- {a:.button} --><!-- {li:.wide} --><!-- {blockquote:.bordered} -->
+```
+
+```html
+<blockquote class="bordered">
+  <ul>
+    <li class="wide">
+      <a href="#continue" class="button">Continue</a>
+    </li>
+  </ul>
+</blockquote>
+```
+
 
 ## Prior art
 
@@ -46,7 +73,7 @@ You can put the comment in the same line or in the next.
 markdown-it-decorate is inspired by these designs, except it also has a few niceties:
 
 * Elements are marked via HTML comments; they'll be invisible to other Markdown parsers like GitHub's.
-* It (will) support inline elements in addition to block elements (in the future).
+* It supports inline elements in addition to block elements.
 
 ## Thanks
 
