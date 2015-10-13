@@ -8,6 +8,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "istanbul": "0.3.22",
     "markdown-it": "5.0.0",
     "mocha": "2.3.3",
     "mocha-standard": "1.0.0",
@@ -35,6 +36,7 @@
     "url": "git+https://github.com/rstacruz/markdown-it-decorate.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha -- -R spec"
   }
 }

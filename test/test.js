@@ -19,12 +19,26 @@ describe('markdown-it-decorate', function () {
     test('text <!--{ .red} -->', '<p class="red">text</p>\n')
     test('text <!-- {.red} -->', '<p class="red">text</p>\n')
     test('text <!-- { .red } -->', '<p class="red">text</p>\n')
+    test('text<!--{.red}-->', '<p class="red">text</p>\n')
+    test('text<!--{ .red }-->', '<p class="red">text</p>\n')
+    test('text<!-- {.red }-->', '<p class="red">text</p>\n')
+    test('text<!--{ .red} -->', '<p class="red">text</p>\n')
+    test('text<!-- {.red} -->', '<p class="red">text</p>\n')
+    test('text<!-- { .red } -->', '<p class="red">text</p>\n')
   })
 
   describe('ids', function () {
     test('text <!--{#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x #myid}-->', '<p id="myid">text</p>\n')
+  })
+
+  describe('falses', function () {
+    test('text <!--comment-->', '<p>text <!--comment--></p>\n')
+    test('text\n<!--comment-->', '<p>text</p>\n<!--comment-->')
+    test('text\n<!--{#x aah}-->', '<p>text</p>\n<!--{#x aah}-->')
+    test('text <!--{#x aah}-->', '<p>text <!--{#x aah}--></p>\n')
+    test('<!--{#x}-->', '<!--{#x}-->')
   })
 
   describe('in the middle', function () {
