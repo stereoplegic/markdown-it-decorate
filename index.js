@@ -33,41 +33,48 @@ function curlyAttrs (state) {
     // "# Hello <!--{.classname} -->"
     // { type: 'inline', children: { ..., '<!--{...}-->' } }
     if (token.type === 'inline') {
-      var lastText = null
-      var subcrumbs = []
-      var lastOpen
-
-      // Keep a list of sub-tokens to be removed
-      var splices = []
-
-      token.children.forEach(function (child, ii) {
-        if (child.type.match(/_open$/)) subcrumbs.push(child)
-        else if (child.type.match(/_close$/)) lastOpen = subcrumbs.pop()
-
-        if (m = child.content.match(tagExpr)) {
-          // Remove the comment, then remove the extra space
-          var myCrumbs = crumbs.concat([ tokens[i - 1] ]).concat(subcrumbs)
-          if (lastOpen) myCrumbs.push(lastOpen)
-
-          parent = findParent(myCrumbs, m[1])
-          if (parent && applyToToken(parent, m[2])) {
-            splices.push(ii)
-            if (lastText) trimRight(lastText, 'content')
-          }
-        }
-        if (child.type === 'text') lastText = child
-      })
-
-      // Remove them in a separate step so we don't
-      splices.reverse().forEach(function (idx) {
-        token.children.splice(idx, 1)
-      })
+      curlyInline(token.children, crumbs, tokens[i - 1])
     }
   })
 
   // Remove <!--...--> html_block tokens
   omissions.forEach(function (idx) {
     tokens = tokens.splice(idx, 1)
+  })
+}
+
+/**
+ * Internal: Run through inline and stuff
+ */
+
+function curlyInline (children, crumbs, previous) {
+  var subcrumbs = []
+  var lastText, lastOpen, m, parent
+
+  // Keep a list of sub-tokens to be removed
+  var omissions = []
+
+  children.forEach(function (child, i) {
+    if (child.type.match(/_open$/)) subcrumbs.push(child)
+    else if (child.type.match(/_close$/)) lastOpen = subcrumbs.pop()
+
+    if (m = child.content.match(tagExpr)) {
+      // Remove the comment, then remove the extra space
+      var myCrumbs = crumbs.concat([ previous ]).concat(subcrumbs)
+      if (lastOpen) myCrumbs.push(lastOpen)
+
+      parent = findParent(myCrumbs, m[1])
+      if (parent && applyToToken(parent, m[2])) {
+        omissions.push(i)
+        if (lastText) trimRight(lastText, 'content')
+      }
+    }
+    if (child.type === 'text') lastText = child
+  })
+
+  // Remove them in a separate step so we don't
+  omissions.reverse().forEach(function (idx) {
+    children.splice(idx, 1)
   })
 }
 
