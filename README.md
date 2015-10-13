@@ -20,11 +20,11 @@ You can put the comment in the same line or in the next.
 
 #### Examples
 
-| What | Source | Destination |
-|----|----|----|
-| Classes | `Text <!--{.center}-->` | `<p class='center'>Text</p>` |
-| Multi classes | `# Hello <!--{.center.red}-->` | `<h1 class='center red'>Hello</h1>` |
-| ID and classes | `# Hello <!--{#top .hide}-->` | `<h1 id='top' class='hide'>Hello</h1>` |
+| Source | Output |
+|----|----|
+| `Text <!--{.center}-->` | `<p class='center'>Text</p>` |
+| `# Hi <!--{.center.red}-->` | `<h1 class='center red'>Hi</h1>` |
+| `# Hi <!--{#top .hide}-->` | `<h1 id='top' class='hide'>Hi</h1>` |
 
 ## Prior art
 
