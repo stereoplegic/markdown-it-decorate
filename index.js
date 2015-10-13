@@ -1,4 +1,5 @@
 'use strict'
+/* eslint-disable no-cond-assign */
 
 var tagExpr = /^<!-- ?\{(.*)\} ?-->$/
 
@@ -46,7 +47,6 @@ function curlyAttrs (state) {
     tokens = tokens.splice(idx, 1)
   })
 }
-
 
 /**
  * Private: trim the right
