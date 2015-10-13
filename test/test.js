@@ -39,13 +39,14 @@ describe('markdown-it-decorate', function () {
   describe('multiple tags', function () {
     test('text <!--{#x}--> <!--{.y}--> foo', '<p id="x" class="y">text foo</p>\n')
     test('text <!--{#x}--><!--{.y}--> foo', '<p id="x" class="y">text foo</p>\n')
+    test('*hi*<!--{#x}-->', '<p><em id="x">hi</em></p>\n')
   })
 
   describe('combinations', function () {
     test('text <!--{#x.y}-->', '<p id="x" class="y">text</p>\n')
     test('text <!--{#x .y}-->', '<p id="x" class="y">text</p>\n')
     test('text <!--{#x .y z=1}-->', '<p id="x" class="y" z="1">text</p>\n')
-    test('text [link](/) <!--{#x .y z=1}-->', '<p id="x" class="y" z="1">text <a href="/">link</a></p>\n')
+    test('text [link](/) <!--{p: #x .y z=1}-->', '<p id="x" class="y" z="1">text <a href="/">link</a></p>\n')
   })
 
   describe('attributes', function () {

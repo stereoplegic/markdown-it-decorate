@@ -19,12 +19,12 @@ function curlyAttrs (state) {
     else if (token.type.match(/_(close|end)$/)) lastParent = crumbs.pop()
 
     // "# Hello\n<!--{.classname}-->"
-    // ...sequence of [heading_open, inline, heading_cose, html_block]
+    // ...sequence of [heading_open, inline, heading_close, html_block]
     if (token.type === 'html_block') {
       m = token.content.match(tagExpr)
       if (!m) return
 
-      parent = findParent(crumbs, lastParent, m[1])
+      parent = findParent(crumbs.concat([ lastParent ]), m[1])
       if (parent && applyToToken(parent, m[2])) {
         omissions.unshift(i)
       }
@@ -34,15 +34,22 @@ function curlyAttrs (state) {
     // { type: 'inline', children: { ..., '<!--{...}-->' } }
     if (token.type === 'inline') {
       var lastText = null
+      var subcrumbs = []
+      var lastOpen
 
       // Keep a list of sub-tokens to be removed
       var splices = []
 
       token.children.forEach(function (child, ii) {
-        m = child.content.match(tagExpr)
-        if (m) {
+        if (child.type.match(/_open$/)) subcrumbs.push(child)
+        else if (child.type.match(/_close$/)) lastOpen = subcrumbs.pop()
+
+        if (m = child.content.match(tagExpr)) {
           // Remove the comment, then remove the extra space
-          parent = findParent(crumbs, tokens[i - 1], m[1])
+          var myCrumbs = crumbs.concat([ tokens[i - 1] ]).concat(subcrumbs)
+          if (lastOpen) myCrumbs.push(lastOpen)
+
+          parent = findParent(myCrumbs, m[1])
           if (parent && applyToToken(parent, m[2])) {
             splices.push(ii)
             if (lastText) trimRight(lastText, 'content')
@@ -79,21 +86,26 @@ var dict = {
   h3: 'heading_open',
   h4: 'heading_open',
   h5: 'heading_open',
-  h6: 'heading_open'
+  h6: 'heading_open',
+  a: 'link_open',
+  em: 'em_open',
+  strong: 'strong_open',
+  code: 'code_inline',
+  s: 's_open'
 }
 
 /**
  * Private: given a list of tokens `list` and `lastParent`, find the one that matches `tag`.
  */
 
-function findParent (list, lastParent, tag) {
-  if (!tag) return lastParent
+function findParent (list, tag) {
+  if (!tag) return list[list.length - 1]
 
   var target = dict[tag.toLowerCase()]
   var token
   var len = list.length
-  for (var i = len; i >= 0; i--) {
-    token = len === i ? lastParent : list[i]
+  for (var i = len - 1; i >= 0; i--) {
+    token = list[i]
     if (token.type === target) return token
   }
 }
