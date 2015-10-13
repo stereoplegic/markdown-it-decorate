@@ -65,10 +65,10 @@ describe('markdown-it-decorate', function () {
     test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
   })
 
-  // describe('lists', function () {
-  //   test('* text\n<!--{.c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
-  //   test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
-  // })
+  describe('tables', function () {
+    test('| x | y |\n|---|---|\n| a | b |\n<!--{.c}-->', { match: /^<table class="c">/ })
+    test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
+  })
 
   xdescribe('pending', function () {
     test('* text\n* text<!--{.c}-->', '<ul class="c">\n<li>text</li>\n<li>text</li>\n</ul>\n')
@@ -85,7 +85,11 @@ describe('markdown-it-decorate', function () {
   function test (input, output) {
     var label = input.replace(/\n/g, '· ')
     it(label, function () {
-      assert.equal(md.render(input), output)
+      if (typeof output === 'object' && output.match) {
+        assert.ok(md.render(input).match(output.match))
+      } else {
+        assert.equal(md.render(input), output)
+      }
     })
   }
 })
