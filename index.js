@@ -24,8 +24,9 @@ function curlyAttrs (state) {
       m = token.content.match(tagExpr)
       if (!m) return
 
-      applyToToken(lastParent, m[1])
-      omissions.unshift(i)
+      if (applyToToken(lastParent, m[1])) {
+        omissions.unshift(i)
+      }
     }
 
     // "# Hello <!--{.classname} -->"
@@ -36,9 +37,10 @@ function curlyAttrs (state) {
       if (!m) return
 
       // Remove the comment, then remove the extra space
-      token.children.pop()
-      trimRight(token.children[token.children.length - 1], 'content')
-      applyToToken(tokens[i - 1], m[1])
+      if (applyToToken(tokens[i - 1], m[1])) {
+        token.children.pop()
+        trimRight(token.children[token.children.length - 1], 'content')
+      }
     }
   })
 
@@ -64,39 +66,37 @@ function trimRight (obj, attr) {
 
 function applyToToken (token, attrs) {
   var m
+  var todo = []
 
   while (attrs.length > 0) {
     if (m = attrs.match(/^\s*\.([a-zA-Z0-9\-\_]+)/)) {
-      addClass(token, m[1])
+      todo.push([ 'class', m[1], { append: true } ])
       shift()
     } else if (m = attrs.match(/^\s*\#([a-zA-Z0-9\-\_]+)/)) {
-      setAttr(token, 'id', m[1])
+      todo.push([ 'id', m[1] ])
       shift()
     } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)="([^"]*)"/)) {
-      setAttr(token, m[1], m[2])
+      todo.push([ m[1], m[2] ])
       shift()
     } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)='([^']*)'/)) {
-      setAttr(token, m[1], m[2])
+      todo.push([ m[1], m[2] ])
       shift()
     } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)=([^ ]*)/)) {
-      setAttr(token, m[1], m[2])
+      todo.push([ m[1], m[2] ])
       shift()
     } else if (m = attrs.match(/^\s+/)) {
       shift()
+    } else {
+      return
     }
   }
+
+  todo.forEach(function (args) { setAttr.apply(this, [token].concat(args)) })
+  return true
 
   function shift () {
     attrs = attrs.substr(m[0].length)
   }
-}
-
-/**
- * Private: adds a class name to token
- */
-
-function addClass (token, value) {
-  setAttr(token, 'class', value, { append: true })
 }
 
 /**

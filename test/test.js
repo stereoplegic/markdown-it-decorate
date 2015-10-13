@@ -71,9 +71,20 @@ describe('markdown-it-decorate', function () {
     test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
   })
 
-  xdescribe('pending', function () {
-    test('* text\n* text<!--{.c}-->', '<ul class="c">\n<li>text</li>\n<li>text</li>\n</ul>\n')
-    test('* text <!--{.c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
+  // describe('specifying tags', function () {
+  //   test('* text <!--{li: .c}-->', '<ul class="c">\n<li class="c">text</li>\n</ul>\n')
+  // })
+
+  describe('li with paragraphs', function () {
+    test('* text\n\n* text<!--{.c}-->',
+      '<ul>\n' +
+        '<li>\n' +
+          '<p>text</p>\n' +
+        '</li>\n' +
+        '<li>\n' +
+          '<p class="c">text</p>\n' +
+        '</li>\n' +
+      '</ul>\n')
   })
 
   describe('line breaks', function () {
