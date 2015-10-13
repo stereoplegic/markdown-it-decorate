@@ -2,6 +2,8 @@
 
 Add attributes, IDs and classes to Markdown.
 
+[![Status](https://travis-ci.org/rstacruz/markdown-it-decorate.svg?branch=master)](https://travis-ci.org/rstacruz/markdown-it-decorate "See test builds")
+
 ```md
 This is some text. <!--{.center}-->
 ```
