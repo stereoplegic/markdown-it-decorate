@@ -12,6 +12,13 @@ This is some text. <!--{.center}-->
 <p class='center'>This is some text.</p>
 ```
 
+## Usage
+
+```js
+const md = require('markdown-it')
+  .use(require('markdown-it-decorate'), opts)
+```
+
 ## Block elements
 
 Create an HTML comment in the format `<!-- {...} -->`, where `...` can be a `.class`, `#id`, `key=attr` or a combination of any of them. Be sure to render markdownIt with `html: true` to enable parsing of `<!--{comments}-->`.
@@ -69,8 +76,8 @@ You can combine them as you need. In this example, the link gets `.button`, the 
 
 * [Kramdown](http://kramdown.gettalong.org/) (Ruby markdown parser) also supports the same syntax, also with a colon (`{: .class #id}`).
 
-### Motivation
-markdown-it-decorate is inspired by these designs, except it also has a few niceties:
+## Motivation
+markdown-it-decorate is inspired by the design of those features and improves on them:
 
 * Elements are marked via HTML comments; they'll be invisible to other Markdown parsers like GitHub's.
 * It supports inline elements in addition to block elements.
