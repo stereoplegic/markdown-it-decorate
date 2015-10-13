@@ -77,6 +77,18 @@ describe('markdown-it-decorate', function () {
     test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
   })
 
+  describe('image', function () {
+    test('![](hi.jpg)<!--{.c}-->', '<p><img src="hi.jpg" alt="" class="c"></p>\n')
+  })
+
+  describe('horizontal rule', function () {
+    test('----\n<!--{.c}-->', '<hr class="c">\n')
+  })
+
+  describe('horizontal rule, nested', function () {
+    test('> ----\n<!--{.c}-->', '<blockquote>\n<hr class="c">\n</blockquote>\n')
+  })
+
   describe('tables', function () {
     test('| x | y |\n|---|---|\n| a | b |\n<!--{.c}-->', { match: /^<table class="c">/ })
     test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')

@@ -7,6 +7,41 @@ module.exports = function attributes (md) {
   md.core.ruler.push('curly_attributes', curlyAttrs)
 }
 
+/*
+ * List of tag -> token type mappings.
+ */
+
+var opening = {
+  li: 'list_item_open',
+  ul: 'bullet_list_open',
+  p: 'paragraph_open',
+  ol: 'ordered_list_open',
+  blockquote: 'blockquote_open',
+  h1: 'heading_open',
+  h2: 'heading_open',
+  h3: 'heading_open',
+  h4: 'heading_open',
+  h5: 'heading_open',
+  h6: 'heading_open',
+  a: 'link_open',
+  em: 'em_open',
+  strong: 'strong_open',
+  code: 'code_inline',
+  s: 's_open',
+  hr: 'hr'
+}
+
+var selfClosingBlock = {
+  hr: true
+}
+var selfClosingInline = {
+  image: true
+}
+
+/**
+ * ...
+ */
+
 function curlyAttrs (state) {
   var tokens = state.tokens
   var crumbs = []
@@ -17,6 +52,7 @@ function curlyAttrs (state) {
     // Save breadcrumbs so html_block will pick it up
     if (token.type.match(/_(open|start)$/)) crumbs.push(token)
     else if (token.type.match(/_(close|end)$/)) lastParent = crumbs.pop()
+    else if (selfClosingBlock[token.type]) { crumbs.push(token); lastParent = token }
 
     // "# Hello\n<!--{.classname}-->"
     // ...sequence of [heading_open, inline, heading_close, html_block]
@@ -57,6 +93,7 @@ function curlyInline (children, crumbs, previous) {
   children.forEach(function (child, i) {
     if (child.type.match(/_open$/)) subcrumbs.push(child)
     else if (child.type.match(/_close$/)) lastOpen = subcrumbs.pop()
+    else if (selfClosingInline[child.type]) lastOpen = child
 
     if (m = child.content.match(tagExpr)) {
       // Remove the comment, then remove the extra space
@@ -78,29 +115,6 @@ function curlyInline (children, crumbs, previous) {
   })
 }
 
-/*
- * List of tag -> token type mappings.
- */
-
-var dict = {
-  li: 'list_item_open',
-  ul: 'bullet_list_open',
-  p: 'paragraph_open',
-  ol: 'ordered_list_open',
-  blockquote: 'blockquote_open',
-  h1: 'heading_open',
-  h2: 'heading_open',
-  h3: 'heading_open',
-  h4: 'heading_open',
-  h5: 'heading_open',
-  h6: 'heading_open',
-  a: 'link_open',
-  em: 'em_open',
-  strong: 'strong_open',
-  code: 'code_inline',
-  s: 's_open'
-}
-
 /**
  * Private: given a list of tokens `list` and `lastParent`, find the one that matches `tag`.
  */
@@ -108,7 +122,7 @@ var dict = {
 function findParent (list, tag) {
   if (!tag) return list[list.length - 1]
 
-  var target = dict[tag.toLowerCase()]
+  var target = opening[tag.toLowerCase()]
   var token
   var len = list.length
   for (var i = len - 1; i >= 0; i--) {
