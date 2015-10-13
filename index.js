@@ -33,16 +33,28 @@ function curlyAttrs (state) {
     // "# Hello <!--{.classname} -->"
     // { type: 'inline', children: { ..., '<!--{...}-->' } }
     if (token.type === 'inline') {
-      var lastChild = token.children[token.children.length - 1]
-      m = lastChild && lastChild.content.match(tagExpr)
-      if (!m) return
+      var lastText = null
 
-      // Remove the comment, then remove the extra space
-      parent = findParent(crumbs, tokens[i - 1], m[1])
-      if (parent && applyToToken(parent, m[2])) {
-        token.children.pop()
-        trimRight(token.children[token.children.length - 1], 'content')
-      }
+      // Keep a list of sub-tokens to be removed
+      var splices = []
+
+      token.children.forEach(function (child, ii) {
+        m = child.content.match(tagExpr)
+        if (m) {
+          // Remove the comment, then remove the extra space
+          parent = findParent(crumbs, tokens[i - 1], m[1])
+          if (parent && applyToToken(parent, m[2])) {
+            splices.push(ii)
+            if (lastText) trimRight(lastText, 'content')
+          }
+        }
+        if (child.type === 'text') lastText = child
+      })
+
+      // Remove them in a separate step so we don't
+      splices.reverse().forEach(function (idx) {
+        token.children.splice(idx, 1)
+      })
     }
   })
 

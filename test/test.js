@@ -25,10 +25,20 @@ describe('markdown-it-decorate', function () {
     test('text <!-- {.red} -->', '<p class="red">text</p>\n')
     test('text <!-- { .red } -->', '<p class="red">text</p>\n')
   })
+
   describe('ids', function () {
     test('text <!--{#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x #myid}-->', '<p id="myid">text</p>\n')
+  })
+
+  describe('in the middle', function () {
+    test('text <!--{#x.y}--> foo', '<p id="x" class="y">text foo</p>\n')
+  })
+
+  describe('multiple tags', function () {
+    test('text <!--{#x}--> <!--{.y}--> foo', '<p id="x" class="y">text foo</p>\n')
+    test('text <!--{#x}--><!--{.y}--> foo', '<p id="x" class="y">text foo</p>\n')
   })
 
   describe('combinations', function () {
