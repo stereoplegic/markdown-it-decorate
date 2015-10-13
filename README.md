@@ -28,15 +28,16 @@ You can put the comment in the same line or in the next.
 
 ## Prior art
 
-This is initially based off of [arve0/markdown-it-attrs](https://github.com/arve0/markdown-it-attrs), which uses text to annotate blocks (eg, `{.class #id}`). markdown-it-attr's approach was based off of [Pandoc's header attributes](http://pandoc.org/README.html#extension-header_attributes).
+* This is initially based off of [arve0/markdown-it-attrs](https://github.com/arve0/markdown-it-attrs) which uses text to annotate blocks (eg, `{.class #id}`). markdown-it-attr's approach was based off of [Pandoc's header attributes](http://pandoc.org/README.html#extension-header_attributes).
 
-[Maruku](http://maruku.rubyforge.org/) (Ruby Markdown parser) also allows for block-level attributes and classnames with its [meta-data syntax](http://maruku.rubyforge.org/proposal.html). The syntax is similar to PanDoc's (`{: .class #id}`
+* [Maruku](http://maruku.rubyforge.org/) (Ruby Markdown parser) also allows for block-level attributes and classnames with its [meta-data syntax](http://maruku.rubyforge.org/proposal.html). The syntax is similar to PanDoc's syntax (`{: .class #id}`).
 
-[Kramdown](http://kramdown.gettalong.org/) (Ruby markdown parser) also supports the same syntax, also with a colon (`{: .class #id}`).
+* [Kramdown](http://kramdown.gettalong.org/) (Ruby markdown parser) also supports the same syntax, also with a colon (`{: .class #id}`).
 
+### Motivation
 markdown-it-decorate is inspired by these designs, except it also has a few niceties:
 
-* Elements are annotated via HTML comments; they will not be visible in other markdown parsers (eg, GitHub).
+* Elements are marked via HTML comments; they'll be invisible to other Markdown parsers like GitHub's.
 * It (will) support inline elements in addition to block elements (in the future).
 
 ## Thanks

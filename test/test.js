@@ -35,6 +35,7 @@ describe('markdown-it-decorate', function () {
     test('text <!--{#x.y}-->', '<p id="x" class="y">text</p>\n')
     test('text <!--{#x .y}-->', '<p id="x" class="y">text</p>\n')
     test('text <!--{#x .y z=1}-->', '<p id="x" class="y" z="1">text</p>\n')
+    test('text [link](/) <!--{#x .y z=1}-->', '<p id="x" class="y" z="1">text <a href="/">link</a></p>\n')
   })
 
   describe('attributes', function () {
