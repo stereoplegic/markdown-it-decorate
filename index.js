@@ -1,7 +1,7 @@
 'use strict'
 /* eslint-disable no-cond-assign */
 
-var tagExpr = /^<!-- ?\{(?:([a-z0-9]+): ?)?(.*)\} ?-->$/
+var tagExpr = /^<!-- ?\{(?:([a-z0-9]+)(\^[0-9]*)?: ?)?(.*)\} ?-->$/
 
 module.exports = function attributes (md) {
   md.core.ruler.push('curly_attributes', curlyAttrs)
@@ -71,8 +71,8 @@ function curlyAttrs (state) {
       m = token.content.match(tagExpr)
       if (!m) return
 
-      parent = findParent(stack.contents, m[1])
-      if (parent && applyToToken(parent, m[2])) {
+      parent = findParent(stack.contents, m[1], m[2])
+      if (parent && applyToToken(parent, m[3])) {
         omissions.unshift(i)
       }
     }
@@ -115,8 +115,8 @@ function curlyInline (children, stack) {
 
     if (m = child.content.match(tagExpr)) {
       // Remove the comment, then remove the extra space
-      parent = findParent(stack.contents, m[1])
-      if (parent && applyToToken(parent, m[2])) {
+      parent = findParent(stack.contents, m[1], m[2])
+      if (parent && applyToToken(parent, m[3])) {
         omissions.push(i)
         if (lastText) trimRight(lastText, 'content')
       }
@@ -134,15 +134,26 @@ function curlyInline (children, stack) {
  * Private: given a list of tokens `list` and `lastParent`, find the one that matches `tag`.
  */
 
-function findParent (list, tag) {
+function findParent (list, tag, depth) {
   if (!tag) return list[list.length - 1]
+
+  if (depth === '^') {
+    depth = 1
+  } else if (typeof depth === 'string') { /* '^2' */
+    depth = +depth.substr(1)
+  } else {
+    depth = 0
+  }
 
   var target = opening[tag.toLowerCase()]
   var token
   var len = list.length
+  var deepness = -1
   for (var i = len - 1; i >= 0; i--) {
     token = list[i]
-    if (token.type === target) return token
+    if (token.type === target) {
+      if (++deepness === depth) return token
+    }
   }
 }
 

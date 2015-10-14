@@ -138,6 +138,8 @@ describe('markdown-it-decorate', function () {
     test('# heading\n<!--{key=val}-->', '<h1 key="val">heading</h1>\n')
     test('> bquote\n<!--{key=val}-->', '<blockquote>\n<p key="val">bquote</p>\n</blockquote>\n')
     test('> > bquote 2x\n<!--{key=val}-->', '<blockquote>\n<blockquote>\n<p key="val">bquote 2x</p>\n</blockquote>\n</blockquote>\n')
+    test('> > bquote 2x\n<!--{blockquote:key=val}-->', '<blockquote>\n<blockquote key="val">\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
+    test('> > bquote 2x\n<!--{blockquote^:key=val}-->', '<blockquote key="val">\n<blockquote>\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
   })
 })
 

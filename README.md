@@ -46,6 +46,7 @@ Annotations will apply itself to the last thing HTML element preceding it. In th
 > * You can specify tag names. [Continue](#continue) <!-- {.wide} -->
 ```
 
+#### Specifying elements
 To make it apply to a different element, precede your annotations with the tag name followed by a `:`.
 
 ```md
@@ -53,6 +54,7 @@ To make it apply to a different element, precede your annotations with the tag n
 > * You can specify tag names. [Continue](#continue) <!-- {li:.wide} -->
 ```
 
+#### Combining
 You can combine them as you need. In this example, the link gets `.button`, the list item gets `.wide`, and the blockquote gets `.bordered`.
 
 ```md
@@ -69,6 +71,20 @@ You can combine them as you need. In this example, the link gets `.button`, the 
 </blockquote>
 ```
 
+#### Selecting same names
+To go back to previous parent with the same name, add `^n` after the tag name, where `n` is how many levels deep to go back to. Using `^0` is the same as not specifying it at all. (This convention is taken from [gitrevisions](http://git-scm.com/docs/gitrevisions).)
+
+```md
+> > > targets 3rd quote <!--{blockquote:.wide}-->
+```
+
+```md
+> > > targets 2nd quote <!--{blockquote^1:.wide}-->
+```
+
+```md
+> > > targets 1st quote <!--{blockquote^2:.wide}-->
+```
 
 ## Prior art
 
