@@ -75,44 +75,44 @@ describe('markdown-it-decorate', function () {
     test('# *h1* <!--{key=val}-->', '<h1><em key="val">h1</em></h1>\n')
   })
 
-  describe('nested inline formatting', function () {
+  describe('nested inline formatting:', function () {
     test('# ***yo*<!--{key=val}-->**', '<h1><strong><em key="val">yo</em></strong></h1>\n')
-    test('# ***yo***<!--{key=val}-->', '<h1><strong key="val"><em>yo</em></strong></h1>\n')
+    test('# ***yo***<!--{key=val}-->', '<h1><strong><em key="val">yo</em></strong></h1>\n')
+    test('# ***yo***\n\n<!--{key=val}-->', '<h1><strong><em key="val">yo</em></strong></h1>\n')
   })
 
-  describe('h1 (lined)', function () {
+  describe('h1 (lined):', function () {
     test('h1\n==\n<!--{key=val}-->', '<h1 key="val">h1</h1>\n')
   })
 
-  describe('blockquote', function () {
+  describe('blockquote:', function () {
     test('> text <!--{key=val}-->', '<blockquote>\n<p key="val">text</p>\n</blockquote>\n')
-    test('> text\n<!--{key=val}-->', '<blockquote key="val">\n<p>text</p>\n</blockquote>\n')
-    test('> text\n> text\n<!--{key=val}-->', '<blockquote key="val">\n<p>text\ntext</p>\n</blockquote>\n')
+    test('> text\n<!--{key=val}-->', '<blockquote>\n<p key="val">text</p>\n</blockquote>\n')
+    test('> text\n> text\n<!--{key=val}-->', '<blockquote>\n<p key="val">text\ntext</p>\n</blockquote>\n')
   })
 
-  describe('lists', function () {
-    test('* text\n<!--{.c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
-    test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
+  describe('lists:', function () {
+    test('* text\n<!--{ul:.c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
+    test('* * text\n<!--{ul:.c}-->', '<ul>\n<li>\n<ul class="c">\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
   })
 
-  describe('image', function () {
+  describe('image:', function () {
     test('![](hi.jpg)<!--{.c}-->', '<p><img src="hi.jpg" alt="" class="c"></p>\n')
   })
 
-  describe('horizontal rule', function () {
+  describe('horizontal rule:', function () {
     test('----\n<!--{.c}-->', '<hr class="c">\n')
   })
 
-  describe('horizontal rule, nested', function () {
+  describe('horizontal rule, nested:', function () {
     test('> ----\n<!--{.c}-->', '<blockquote>\n<hr class="c">\n</blockquote>\n')
   })
 
-  describe('tables', function () {
-    test('| x | y |\n|---|---|\n| a | b |\n<!--{.c}-->', { match: /^<table class="c">/ })
-    test('* * text\n<!--{.c}-->', '<ul class="c">\n<li>\n<ul>\n<li>text</li>\n</ul>\n</li>\n</ul>\n')
+  describe('tables:', function () {
+    test('| x | y |\n|---|---|\n| a | b |\n<!--{table:.c}-->', { match: /^<table class="c">/ })
   })
 
-  describe('specifying tags', function () {
+  describe('specifying tags:', function () {
     test('* text <!--{li: .c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
     test('* text <!--{ul: .c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
     test('1. text <!--{ol: .c}-->', '<ol class="c">\n<li>text</li>\n</ol>\n')
@@ -121,7 +121,7 @@ describe('markdown-it-decorate', function () {
     test('> * text <!--{blockquote:.c}-->', { match: /<blockquote class="c">/ })
   })
 
-  describe('li with paragraphs', function () {
+  describe('li with paragraphs:', function () {
     test('* text\n\n* text<!--{.c}-->',
       '<ul>\n' +
         '<li>\n' +
@@ -133,21 +133,30 @@ describe('markdown-it-decorate', function () {
       '</ul>\n')
   })
 
-  describe('line breaks', function () {
+  describe('line breaks:', function () {
     test('para\n<!--{.red .blue}-->', '<p class="red blue">para</p>\n')
     test('# heading\n<!--{key=val}-->', '<h1 key="val">heading</h1>\n')
-    test('> bquote\n<!--{key=val}-->', '<blockquote key="val">\n<p>bquote</p>\n</blockquote>\n')
-    test('> > bquote 2x\n<!--{key=val}-->', '<blockquote key="val">\n<blockquote>\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
+    test('> bquote\n<!--{key=val}-->', '<blockquote>\n<p key="val">bquote</p>\n</blockquote>\n')
+    test('> > bquote 2x\n<!--{key=val}-->', '<blockquote>\n<blockquote>\n<p key="val">bquote 2x</p>\n</blockquote>\n</blockquote>\n')
   })
 })
 
 function test (input, output) {
   var label = input.replace(/\n/g, '· ')
-  it(label, function () {
+  it(label, testRun(input, output))
+}
+
+function testRun (input, output) {
+  return function () {
     if (typeof output === 'object' && output.match) {
       assert.ok(md.render(input).match(output.match))
     } else {
-      assert.equal(md.render(input), output)
+      assert.equal(md.render(input), output, ' ')
     }
-  })
+  }
+}
+
+function test_ (input, output) {
+  var label = input.replace(/\n/g, '· ')
+  it.only(label, testRun(input, output))
 }

@@ -28,6 +28,11 @@ var opening = {
   strong: 'strong_open',
   code: 'code_inline',
   s: 's_open',
+  tr: 'tr_open',
+  td: 'td_open',
+  tbody: 'tbody_open',
+  thead: 'thead_open',
+  table: 'table_open',
   hr: 'hr'
 }
 
@@ -44,15 +49,21 @@ var selfClosingInline = {
 
 function curlyAttrs (state) {
   var tokens = state.tokens
-  var crumbs = []
   var omissions = []
-  var lastParent, parent, m
+  var parent, m
+  var stack = { len: 0, contents: [] }
 
   tokens.forEach(function (token, i) {
     // Save breadcrumbs so html_block will pick it up
-    if (token.type.match(/_(open|start)$/)) crumbs.push(token)
-    else if (token.type.match(/_(close|end)$/)) lastParent = crumbs.pop()
-    else if (selfClosingBlock[token.type]) { crumbs.push(token); lastParent = token }
+    if (token.type.match(/_(open|start)$/)) {
+      stack.contents.splice(stack.len)
+      stack.contents.push(token)
+      stack.len++
+    } else if (token.type.match(/_(close|end)$/)) {
+      stack.len--
+    } else if (selfClosingBlock[token.type]) {
+      stack.contents.push(token)
+    }
 
     // "# Hello\n<!--{.classname}-->"
     // ...sequence of [heading_open, inline, heading_close, html_block]
@@ -60,7 +71,7 @@ function curlyAttrs (state) {
       m = token.content.match(tagExpr)
       if (!m) return
 
-      parent = findParent(crumbs.concat([ lastParent ]), m[1])
+      parent = findParent(stack.contents, m[1])
       if (parent && applyToToken(parent, m[2])) {
         omissions.unshift(i)
       }
@@ -69,7 +80,9 @@ function curlyAttrs (state) {
     // "# Hello <!--{.classname} -->"
     // { type: 'inline', children: { ..., '<!--{...}-->' } }
     if (token.type === 'inline') {
-      curlyInline(token.children, crumbs, tokens[i - 1])
+      stack.contents.push(tokens[i - 1]) /* ? */
+      stack.len++
+      curlyInline(token.children, stack)
     }
   })
 
@@ -83,24 +96,26 @@ function curlyAttrs (state) {
  * Internal: Run through inline and stuff
  */
 
-function curlyInline (children, crumbs, previous) {
-  var subcrumbs = []
-  var lastText, lastOpen, m, parent
+function curlyInline (children, stack) {
+  var lastText, m, parent
 
   // Keep a list of sub-tokens to be removed
   var omissions = []
 
   children.forEach(function (child, i) {
-    if (child.type.match(/_open$/)) subcrumbs.push(child)
-    else if (child.type.match(/_close$/)) lastOpen = subcrumbs.pop()
-    else if (selfClosingInline[child.type]) lastOpen = child
+    if (child.type.match(/_open$/)) {
+      stack.contents.splice(stack.len)
+      stack.contents.push(child)
+      stack.len++
+    } else if (child.type.match(/_close$/)) {
+      stack.len--
+    } else if (selfClosingInline[child.type]) {
+      stack.contents.push(child)
+    }
 
     if (m = child.content.match(tagExpr)) {
       // Remove the comment, then remove the extra space
-      var myCrumbs = crumbs.concat([ previous ]).concat(subcrumbs)
-      if (lastOpen) myCrumbs.push(lastOpen)
-
-      parent = findParent(myCrumbs, m[1])
+      parent = findParent(stack.contents, m[1])
       if (parent && applyToToken(parent, m[2])) {
         omissions.push(i)
         if (lastText) trimRight(lastText, 'content')
