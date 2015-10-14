@@ -68,9 +68,7 @@ function curlyAttrs (state) {
   })
 
   // Remove <!--...--> html_block tokens
-  omissions.forEach(function (idx) {
-    tokens = tokens.splice(idx, 1)
-  })
+  omissions.forEach((idx) => { tokens.splice(idx, 1) })
 }
 
 /**

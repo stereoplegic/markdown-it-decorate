@@ -150,4 +150,14 @@ describe('markdown-it-decorate', function () {
     test('> > bquote 2x\n<!--{blockquote:key=val}-->', '<blockquote>\n<blockquote key="val">\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
     test('> > bquote 2x\n<!--{blockquote^:key=val}-->', '<blockquote key="val">\n<blockquote>\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
   })
+
+  describe('headings:', function () {
+    test(
+      '# docpress\n<!--{h1:.-with-byline}-->\n\n' +
+      '> It is good\n<!--{blockquote:.byline}-->\n',
+      '<h1 class="-with-byline">docpress</h1>\n' +
+      '<blockquote class="byline">\n' +
+      '<p>It is good</p>\n' +
+      '</blockquote>\n')
+  })
 })
