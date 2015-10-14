@@ -5,7 +5,8 @@ Add attributes, IDs and classes to Markdown.
 [![Status](https://travis-ci.org/rstacruz/markdown-it-decorate.svg?branch=master)](https://travis-ci.org/rstacruz/markdown-it-decorate "See test builds")
 
 ```md
-This is some text. <!--{.center}-->
+This is some text.
+<!--{.center}-->
 ```
 
 ```html
@@ -19,11 +20,13 @@ const md = require('markdown-it')
   .use(require('markdown-it-decorate'), opts)
 ```
 
-## Block elements
+## Annotating elements
 
 Create an HTML comment in the format `<!-- {...} -->`, where `...` can be a `.class`, `#id`, `key=attr` or a combination of any of them. Be sure to render markdownIt with `html: true` to enable parsing of `<!--{comments}-->`.
 
-You can put the comment in the same line or in the next.
+It will be applied to the deepest thing it's seen; ie, a blockquote containing a bold link (`> **[link]**`) will style the innermost element: the link.
+
+You can put the comment in the same line or in the next. I recommend keeping it on a separate line, since this will make GitHub ignore it.
 
 #### Examples
 
@@ -37,13 +40,14 @@ You can put the comment in the same line or in the next.
 
 ## Disambiguating
 
-Annotations will apply itself to the last thing HTML element preceding it. In the case below, `.wide` will be applied to the link (*"Continue"*).
+Annotations will apply itself to the deepest element preceding it. In the case below, `.wide` will be applied to the link (*"Continue"*).
 
 ```md
 > This is a blockquote
 >
 > * It has a list.
-> * You can specify tag names. [Continue](#continue) <!-- {.wide} -->
+> * You can specify tag names. [Continue](#continue)
+> <!-- {.wide} -->
 ```
 
 #### Specifying elements
