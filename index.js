@@ -8,38 +8,27 @@ module.exports = function attributes (md) {
 }
 
 /*
- * List of tag -> token type mappings.
+ * List of tag -> token type mappings. Eg, `<li>` is `list_item_open`.
  */
 
 var opening = {
-  li: 'list_item_open',
-  ul: 'bullet_list_open',
-  p: 'paragraph_open',
-  ol: 'ordered_list_open',
-  blockquote: 'blockquote_open',
-  h1: 'heading_open',
-  h2: 'heading_open',
-  h3: 'heading_open',
-  h4: 'heading_open',
-  h5: 'heading_open',
-  h6: 'heading_open',
-  a: 'link_open',
-  em: 'em_open',
-  strong: 'strong_open',
-  code: 'code_inline',
-  s: 's_open',
-  tr: 'tr_open',
-  td: 'td_open',
-  tbody: 'tbody_open',
-  thead: 'thead_open',
-  table: 'table_open',
-  hr: 'hr'
+  li: 'list_item',
+  ul: 'bullet_list',
+  p: 'paragraph',
+  ol: 'ordered_list',
+  blockquote: 'blockquote',
+  h1: 'heading',
+  h2: 'heading',
+  h3: 'heading',
+  h4: 'heading',
+  h5: 'heading',
+  h6: 'heading',
+  a: 'link',
+  code: 'code_inline'
 }
 
-var selfClosingBlock = {
-  hr: true
-}
-var selfClosingInline = {
+var selfClosing = {
+  hr: true,
   image: true
 }
 
@@ -51,18 +40,12 @@ function curlyAttrs (state) {
   var tokens = state.tokens
   var omissions = []
   var parent, m
-  var stack = { len: 0, contents: [] }
+  var stack = { len: 0, contents: [], types: {} }
 
   tokens.forEach(function (token, i) {
     // Save breadcrumbs so html_block will pick it up
-    if (token.type.match(/_(open|start)$/)) {
-      stack.contents.splice(stack.len)
-      stack.contents.push(token)
-      stack.len++
-    } else if (token.type.match(/_(close|end)$/)) {
-      stack.len--
-    } else if (selfClosingBlock[token.type]) {
-      stack.contents.push(token)
+    if (token.type.match(/_(open|start)$/) || selfClosing[token.type]) {
+      spush(stack, token)
     }
 
     // "# Hello\n<!--{.classname}-->"
@@ -71,7 +54,7 @@ function curlyAttrs (state) {
       m = token.content.match(tagExpr)
       if (!m) return
 
-      parent = findParent(stack.contents, m[1], m[2])
+      parent = findParent(stack, m[1], m[2])
       if (parent && applyToToken(parent, m[3])) {
         omissions.unshift(i)
       }
@@ -80,8 +63,6 @@ function curlyAttrs (state) {
     // "# Hello <!--{.classname} -->"
     // { type: 'inline', children: { ..., '<!--{...}-->' } }
     if (token.type === 'inline') {
-      stack.contents.push(tokens[i - 1]) /* ? */
-      stack.len++
       curlyInline(token.children, stack)
     }
   })
@@ -103,21 +84,15 @@ function curlyInline (children, stack) {
   var omissions = []
 
   children.forEach(function (child, i) {
-    if (child.type.match(/_open$/)) {
-      stack.contents.splice(stack.len)
-      stack.contents.push(child)
-      stack.len++
-    } else if (child.type.match(/_close$/)) {
-      stack.len--
-    } else if (selfClosingInline[child.type]) {
-      stack.contents.push(child)
+    if (child.type.match(/_open$/) || selfClosing[child.type]) {
+      spush(stack, child)
     }
 
     if (m = child.content.match(tagExpr)) {
       // Remove the comment, then remove the extra space
-      parent = findParent(stack.contents, m[1], m[2])
+      parent = findParent(stack, m[1], m[2])
       if (parent && applyToToken(parent, m[3])) {
-        omissions.push(i)
+        omissions.unshift(i)
         if (lastText) trimRight(lastText, 'content')
       }
     }
@@ -125,7 +100,7 @@ function curlyInline (children, stack) {
   })
 
   // Remove them in a separate step so we don't
-  omissions.reverse().forEach(function (idx) {
+  omissions.forEach(function (idx) {
     children.splice(idx, 1)
   })
 }
@@ -134,8 +109,8 @@ function curlyInline (children, stack) {
  * Private: given a list of tokens `list` and `lastParent`, find the one that matches `tag`.
  */
 
-function findParent (list, tag, depth) {
-  if (!tag) return list[list.length - 1]
+function findParent (stack, tag, depth) {
+  if (!tag) return stack.last
 
   if (depth === '^') {
     depth = 1
@@ -145,16 +120,9 @@ function findParent (list, tag, depth) {
     depth = 0
   }
 
-  var target = opening[tag.toLowerCase()]
-  var token
-  var len = list.length
-  var deepness = -1
-  for (var i = len - 1; i >= 0; i--) {
-    token = list[i]
-    if (token.type === target) {
-      if (++deepness === depth) return token
-    }
-  }
+  var target = opening[tag.toLowerCase()] || tag.toLowerCase()
+  var list = stack.types[target]
+  return list[list.length - 1 - depth]
 }
 
 /**
@@ -223,3 +191,15 @@ function setAttr (token, attr, value, options) {
     token.attrs[idx][1] = value
   }
 }
+
+/**
+ * Private: pushes a token to the stack
+ */
+
+function spush (stack, token) {
+  var type = token.type.replace(/_(open|start)$/, '')
+  if (!stack.types[type]) { stack.types[type] = [] }
+  stack.types[type].push(token)
+  stack.last = token
+}
+
