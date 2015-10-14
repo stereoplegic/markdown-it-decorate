@@ -1,9 +1,10 @@
 'use strict'
 
-var assert = require('assert')
 var markdownIt = require('markdown-it')
 var decorate = require('../')
-var md = markdownIt({ html: true }).use(decorate)
+var test = require('./support/test')
+
+global.md = markdownIt({ html: true }).use(decorate)
 
 describe('markdown-it-decorate', function () {
   describe('classes:', function () {
@@ -150,23 +151,3 @@ describe('markdown-it-decorate', function () {
     test('> > bquote 2x\n<!--{blockquote^:key=val}-->', '<blockquote key="val">\n<blockquote>\n<p>bquote 2x</p>\n</blockquote>\n</blockquote>\n')
   })
 })
-
-function test (input, output) {
-  var label = input.replace(/\n/g, '· ')
-  it(label, testRun(input, output))
-}
-
-function testRun (input, output) {
-  return function () {
-    if (typeof output === 'object' && output.match) {
-      assert.ok(md.render(input).match(output.match))
-    } else {
-      assert.equal(md.render(input), output, ' ')
-    }
-  }
-}
-
-function test_ (input, output) {
-  var label = input.replace(/\n/g, '· ')
-  it.only(label, testRun(input, output))
-}
