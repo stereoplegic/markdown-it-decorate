@@ -6,13 +6,13 @@ var decorate = require('../')
 var md = markdownIt({ html: true }).use(decorate)
 
 describe('markdown-it-decorate', function () {
-  describe('classes', function () {
+  describe('classes:', function () {
     test('text <!--{.red}-->', '<p class="red">text</p>\n')
     test('text <!--{.red.blue}-->', '<p class="red blue">text</p>\n')
     test('text <!--{.red .blue}-->', '<p class="red blue">text</p>\n')
   })
 
-  describe('spaces', function () {
+  describe('spaces:', function () {
     test('text <!--{.red}-->', '<p class="red">text</p>\n')
     test('text <!--{ .red }-->', '<p class="red">text</p>\n')
     test('text <!-- {.red }-->', '<p class="red">text</p>\n')
@@ -27,13 +27,21 @@ describe('markdown-it-decorate', function () {
     test('text<!-- { .red } -->', '<p class="red">text</p>\n')
   })
 
-  describe('ids', function () {
+  describe('ids:', function () {
     test('text <!--{#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x#myid}-->', '<p id="myid">text</p>\n')
     test('text <!--{#x #myid}-->', '<p id="myid">text</p>\n')
   })
 
-  describe('falses', function () {
+  describe('new lines:', function () {
+    test('text\n<!--{#myid}-->', '<p id="myid">text</p>\n')
+    test('text\n\n<!--{#myid}-->', '<p id="myid">text</p>\n')
+    test('text\n<!--{#myid}-->\n\nhi', '<p id="myid">text</p>\n<p>hi</p>\n')
+    test('text\n<!--{#myid}-->\nhi', '<p id="myid">text</p>\n<p>hi</p>\n')
+    test('text\n\n<!--{#myid}-->\nhi', '<p id="myid">text</p>\n<p>hi</p>\n')
+  })
+
+  describe('falses:', function () {
     test('text <!--comment-->', '<p>text <!--comment--></p>\n')
     test('text\n<!--comment-->', '<p>text</p>\n<!--comment-->')
     test('text\n<!--{#x aah}-->', '<p>text</p>\n<!--{#x aah}-->')
@@ -41,7 +49,7 @@ describe('markdown-it-decorate', function () {
     test('<!--{#x}-->', '<!--{#x}-->')
   })
 
-  describe('in the middle', function () {
+  describe('in the middle:', function () {
     test('text <!--{#x.y}--> foo', '<p id="x" class="y">text foo</p>\n')
   })
 

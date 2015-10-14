@@ -1,7 +1,7 @@
 'use strict'
 /* eslint-disable no-cond-assign */
 
-var tagExpr = /^<!-- ?\{(?:([a-z0-9]+)(\^[0-9]*)?: ?)?(.*)\} ?-->$/
+var tagExpr = /^<!-- ?\{(?:([a-z0-9]+)(\^[0-9]*)?: ?)?(.*)\} ?-->\n?$/
 
 module.exports = function attributes (md) {
   md.core.ruler.push('curly_attributes', curlyAttrs)
