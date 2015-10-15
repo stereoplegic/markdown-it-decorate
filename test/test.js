@@ -11,6 +11,9 @@ describe('markdown-it-decorate', function () {
     test('text <!--{.red}-->', '<p class="red">text</p>\n')
     test('text <!--{.red.blue}-->', '<p class="red blue">text</p>\n')
     test('text <!--{.red .blue}-->', '<p class="red blue">text</p>\n')
+    test('text <!--{.red-1.green-2}-->', '<p class="red-1 green-2">text</p>\n')
+    test('text <!--{.red-1 .green-2}-->', '<p class="red-1 green-2">text</p>\n')
+    test('text <!--{.red-1 .-green-2}-->', '<p class="red-1 -green-2">text</p>\n')
   })
 
   describe('spaces:', function () {
@@ -121,6 +124,12 @@ describe('markdown-it-decorate', function () {
     test('| x | y |\n|---|---|\n| a | b |\n<!--{table:.c}-->', { match: /^<table class="c">/ })
   })
 
+  xdescribe('tables (pending):', function () {
+    test('| x | y |\n|---|---|\n| a | b |\n<!--{tr:.c}-->', { match: /^<tr class="c">/ })
+    test('| x | y |\n|---|---|\n| a | b |\n<!--{td:.c}-->', { match: /^<td class="c">/ })
+    test('| x | y |\n|---|---|\n| a | b |\n<!--{tbody:.c}-->', { match: /^<tbody class="c">/ })
+  })
+
   describe('specifying tags:', function () {
     test('* text <!--{li: .c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
     test('* text <!--{ul: .c}-->', '<ul class="c">\n<li>text</li>\n</ul>\n')
@@ -128,6 +137,11 @@ describe('markdown-it-decorate', function () {
     test('# text <!--{h1: .c}-->', '<h1 class="c">text</h1>\n')
     test('> text <!--{blockquote: .c}-->', '<blockquote class="c">\n<p>text</p>\n</blockquote>\n')
     test('> * text <!--{blockquote:.c}-->', { match: /<blockquote class="c">/ })
+  })
+
+  describe('tags with spacing:', function () {
+    test('* text <!--{li:.c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
+    test('* text <!--{li: .c}-->', '<ul>\n<li class="c">text</li>\n</ul>\n')
   })
 
   describe('li with paragraphs:', function () {
