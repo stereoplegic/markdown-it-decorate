@@ -45,11 +45,16 @@ describe('markdown-it-decorate', function () {
     test('text\n\n<!--{#myid}-->\nhi', '<p id="myid">text</p>\n<p>hi</p>\n')
   })
 
+  describe('no attribute value:', function() {
+    test('text <!--{data-foo}-->', '<p data-foo="">text</p>\n')
+    test('text <!--{bar=}-->', '<p bar="">text</p>\n')
+    test('text <!--{foo= bar}-->', '<p foo="" bar="">text</p>\n')
+    test('text <!--{#foo .bar baz booyah=}-->', '<p id="foo" class="bar" baz="" booyah="">text</p>\n')
+  })
+
   describe('falses:', function () {
     test('text <!--comment-->', '<p>text <!--comment--></p>\n')
     test('text\n<!--comment-->', '<p>text</p>\n<!--comment-->')
-    test('text\n<!--{#x aah}-->', '<p>text</p>\n<!--{#x aah}-->')
-    test('text <!--{#x aah}-->', '<p>text <!--{#x aah}--></p>\n')
     test('<!--{#x}-->', '<!--{#x}-->')
   })
 
@@ -68,6 +73,8 @@ describe('markdown-it-decorate', function () {
     test('text <!--{#x .y}-->', '<p id="x" class="y">text</p>\n')
     test('text <!--{#x .y z=1}-->', '<p id="x" class="y" z="1">text</p>\n')
     test('text [link](/) <!--{p: #x .y z=1}-->', '<p id="x" class="y" z="1">text <a href="/">link</a></p>\n')
+    test('text\n<!--{#x aah}-->', '<p id="x" aah="">text</p>\n')
+    test('text <!--{#x aah}-->', '<p id="x" aah="">text</p>\n')
   })
 
   describe('attributes', function () {
