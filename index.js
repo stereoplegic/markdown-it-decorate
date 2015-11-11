@@ -12,19 +12,19 @@ module.exports = function attributes (md) {
  */
 
 var opening = {
-  li: 'list_item',
-  ul: 'bullet_list',
-  p: 'paragraph',
-  ol: 'ordered_list',
-  blockquote: 'blockquote',
-  h1: 'heading',
-  h2: 'heading',
-  h3: 'heading',
-  h4: 'heading',
-  h5: 'heading',
-  h6: 'heading',
-  a: 'link',
-  code: 'code_inline'
+  li: ['list_item'],
+  ul: ['bullet_list'],
+  p: ['paragraph'],
+  ol: ['ordered_list'],
+  blockquote: ['blockquote'],
+  h1: ['heading'],
+  h2: ['heading'],
+  h3: ['heading'],
+  h4: ['heading'],
+  h5: ['heading'],
+  h6: ['heading'],
+  a: ['link'],
+  code: ['code_inline', 'fence']
 }
 
 var selfClosing = {
@@ -44,7 +44,7 @@ function curlyAttrs (state) {
 
   tokens.forEach(function (token, i) {
     // Save breadcrumbs so html_block will pick it up
-    if (token.type.match(/_(open|start)$/) || selfClosing[token.type]) {
+    if (isOpener(token.type) || selfClosing[token.type]) {
       spush(stack, token)
     }
 
@@ -72,6 +72,14 @@ function curlyAttrs (state) {
 }
 
 /**
+ * Internal: checks in a token type is a block opener
+ */
+
+function isOpener (type) {
+  return type.match(/_(open|start)$/) || type === 'fence'
+}
+
+/**
  * Internal: Run through inline and stuff
  */
 
@@ -82,7 +90,7 @@ function curlyInline (children, stack) {
   var omissions = []
 
   children.forEach(function (child, i) {
-    if (child.type.match(/_open$/) || selfClosing[child.type]) {
+    if (isOpener(child.type) || selfClosing[child.type]) {
       spush(stack, child)
     }
 
@@ -118,8 +126,15 @@ function findParent (stack, tag, depth) {
     depth = 0
   }
 
-  var target = opening[tag.toLowerCase()] || tag.toLowerCase()
+  var targets = opening[tag.toLowerCase()] || [tag.toLowerCase()]
+
+  var target = targets.filter(function (target) {
+    return stack.types[target]
+  })
+
   var list = stack.types[target]
+  if (!list) throw new Error("Can't find tag '" + tag + "'")
+
   return list[list.length - 1 - depth]
 }
 

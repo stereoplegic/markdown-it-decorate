@@ -174,4 +174,14 @@ describe('markdown-it-decorate', function () {
       '<p>It is good</p>\n' +
       '</blockquote>\n')
   })
+
+  describe('code blocks:', function () {
+    test(
+      '```\n' +
+      'hello\n' +
+      '```\n' +
+      '<!--{code: .foo}-->',
+      '<pre><code class="foo">hello\n' +
+      '</code></pre>\n')
+  })
 })
