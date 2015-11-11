@@ -90,6 +90,15 @@ To go back to previous parent with the same name, add `^n` after the tag name, w
 > > > targets 1st quote <!--{blockquote^2:.wide}-->
 ```
 
+### Decorating code blocks
+
+You can decorate fenced code blocks. Indented code blocks are not supported, unfortunately.
+
+    ```
+    return true
+    ```
+    <!-- {code: .lang-javascript} -->
+
 ## Prior art
 
 * This is initially based off of [arve0/markdown-it-attrs](https://github.com/arve0/markdown-it-attrs) which uses text to annotate blocks (eg, `{.class #id}`). markdown-it-attr's approach was based off of [Pandoc's header attributes](http://pandoc.org/README.html#extension-header_attributes).
