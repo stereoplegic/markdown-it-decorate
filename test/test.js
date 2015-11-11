@@ -45,7 +45,7 @@ describe('markdown-it-decorate', function () {
     test('text\n\n<!--{#myid}-->\nhi', '<p id="myid">text</p>\n<p>hi</p>\n')
   })
 
-  describe('no attribute value:', function() {
+  describe('no attribute value:', function () {
     test('text <!--{data-foo}-->', '<p data-foo="">text</p>\n')
     test('text <!--{bar=}-->', '<p bar="">text</p>\n')
     test('text <!--{foo= bar}-->', '<p foo="" bar="">text</p>\n')
