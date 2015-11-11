@@ -40,13 +40,13 @@ You can put the comment in the same line or in the next. I recommend keeping it 
 
 ## Disambiguating
 
-Annotations will apply itself to the deepest element preceding it. In the case below, `.wide` will be applied to the link (*"Continue"*).
+Annotations will apply itself to the deepest element preceding it. In the case below, `.wide` will be applied to the link (*"Next"*).
 
 ```md
 > This is a blockquote
 >
 > * It has a list.
-> * You can specify tag names. [Continue](#continue)
+> * You can specify tag names. [Next](#next)
 > <!-- {.wide} -->
 ```
 
@@ -55,14 +55,17 @@ To make it apply to a different element, precede your annotations with the tag n
 
 ```md
 > * It has a list.
-> * You can specify tag names. [Continue](#continue) <!-- {li:.wide} -->
+> * You can specify tag names. [Next](#next) <!-- {li:.wide} -->
 ```
 
 #### Combining
 You can combine them as you need. In this example, the link gets `.button`, the list item gets `.wide`, and the blockquote gets `.bordered`.
 
 ```md
-> * [Continue](#continue) <!-- {a:.button} --><!-- {li:.wide} --><!-- {blockquote:.bordered} -->
+> * [Continue](#continue)
+<!-- {a:.button} -->
+<!-- {li:.wide} -->
+<!-- {blockquote:.bordered} -->
 ```
 
 ```html
