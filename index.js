@@ -24,7 +24,7 @@ var opening = {
   h5: ['heading'],
   h6: ['heading'],
   a: ['link'],
-  code: ['code_inline', 'fence']
+  code: ['code_inline', 'code_block', 'fence']
 }
 
 var selfClosing = {
@@ -76,7 +76,8 @@ function curlyAttrs (state) {
  */
 
 function isOpener (type) {
-  return type.match(/_(open|start)$/) || type === 'fence'
+  return type.match(/_(open|start)$/) ||
+    type === 'fence' || type === 'code_block'
 }
 
 /**

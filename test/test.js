@@ -175,13 +175,23 @@ describe('markdown-it-decorate', function () {
       '</blockquote>\n')
   })
 
-  describe('code blocks:', function () {
+  describe('fenced code blocks:', function () {
     test(
       '```\n' +
       'hello\n' +
       '```\n' +
       '<!--{code: .foo}-->',
       '<pre><code class="foo">hello\n' +
+      '</code></pre>\n')
+  })
+
+  describe('indented blocks:', function () {
+    // Sadly, it doesn't actually apply.
+    test(
+      '    hello\n' +
+      '\n' +
+      '<!--{code: .foo}-->',
+      '<pre><code>hello\n' +
       '</code></pre>\n')
   })
 })
