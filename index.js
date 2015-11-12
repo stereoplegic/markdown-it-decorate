@@ -143,7 +143,7 @@ function findParent (stack, tag, depth) {
   })
 
   var list = stack.types[target]
-  if (!list) throw new Error("Can't find tag '" + tag + "'")
+  if (!list) return // Can't find tag `tag`
 
   return list[list.length - 1 - depth]
 }
