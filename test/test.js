@@ -201,4 +201,21 @@ describe('markdown-it-decorate', function () {
       '<pre><code>hello\n' +
       '</code></pre>\n')
   })
+
+  describe('inline code:', function () {
+    // Also doesn't apply.
+    test(
+      'hi `there` <!--{code:.foo}-->',
+      '<p>hi <code>there</code></p>\n')
+
+    test(
+      'hi *there* <!--{em:.foo}-->',
+      '<p>hi <em class="foo">there</em></p>\n')
+  })
+
+  describe('silent errors:', function () {
+    test(
+      'hi <!--{a:.foo}-->',
+      '<p>hi <!--{a:.foo}--></p>\n')
+  })
 })

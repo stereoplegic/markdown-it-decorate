@@ -1,3 +1,8 @@
+## [v1.2.0]
+> Nov 12, 2015
+
+- Don't throw errors in tags that can't be decorated.
+
 ## [v1.1.0]
 > Nov 11, 2015
 
@@ -33,3 +38,4 @@
 [v0.3.1]: https://github.com/rstacruz/markdown-it-decorate/compare/v0.3.0...v0.3.1
 [v1.0.0]: https://github.com/rstacruz/markdown-it-decorate/compare/v0.3.1...v1.0.0
 [v1.1.0]: https://github.com/rstacruz/markdown-it-decorate/compare/v1.0.0...v1.1.0
+[v1.2.0]: https://github.com/rstacruz/markdown-it-decorate/compare/v1.1.0...v1.2.0
