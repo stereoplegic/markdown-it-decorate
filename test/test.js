@@ -205,4 +205,10 @@ describe('markdown-it-decorate', function () {
       'hi *there* <!--{em:.foo}-->',
       '<p>hi <em class="foo">there</em></p>\n')
   })
+
+  describe('silent errors:', function () {
+    test(
+      'hi <!--{a:.foo}-->',
+      '<p>hi <!--{a:.foo}--></p>\n')
+  })
 })
