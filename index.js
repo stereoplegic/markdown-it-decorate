@@ -91,18 +91,26 @@ function curlyInline (children, stack) {
   var omissions = []
 
   children.forEach(function (child, i) {
-    if (isOpener(child.type) || selfClosing[child.type]) {
+    if (isOpener(child.type) ||
+      selfClosing[child.type] ||
+      child.type === 'code_inline') {
       spush(stack, child)
     }
 
+    // Decorate tags are found
     if (m = child.content.match(tagExpr)) {
+      var tag = m[1]
+      var depth = m[2]
+      var attrs = m[3]
+
       // Remove the comment, then remove the extra space
-      parent = findParent(stack, m[1], m[2])
-      if (parent && applyToToken(parent, m[3])) {
+      parent = findParent(stack, tag, depth)
+      if (parent && applyToToken(parent, attrs)) {
         omissions.unshift(i)
         if (lastText) trimRight(lastText, 'content')
       }
     }
+
     if (child.type === 'text') lastText = child
   })
 
@@ -113,7 +121,8 @@ function curlyInline (children, stack) {
 }
 
 /**
- * Private: given a list of tokens `list` and `lastParent`, find the one that matches `tag`.
+ * Private: given a list of tokens `list` and `lastParent`, find the one that
+ * matches `tag`.
  */
 
 function findParent (stack, tag, depth) {
