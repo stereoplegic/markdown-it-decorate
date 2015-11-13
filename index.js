@@ -182,6 +182,9 @@ function applyToToken (token, attrs) {
     } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)=([^ ]*)/)) {
       todo.push([ m[1], m[2] ])
       shift()
+    } else if (m = attrs.match(/^\s*([a-zA-Z0-9\-\_]+)/)) {
+      todo.push([ m[1], '' ])
+      shift()
     } else if (m = attrs.match(/^\s+/)) {
       shift()
     } else {
@@ -225,4 +228,3 @@ function spush (stack, token) {
   stack.types[type].push(token)
   stack.last = token
 }
-
